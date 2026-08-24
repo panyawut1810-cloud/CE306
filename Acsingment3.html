@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acsingment 3 - Kawaii Cafe Financial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; font-family: 'Mitr', sans-serif; }
+    body { max-width: 650px; margin: 30px auto; padding: 20px; background: #fff8f0; color: #6d5959; }
+    .card { background: #ffffff; padding: 25px; border-radius: 24px; box-shadow: 0 10px 25px rgba(230, 190, 180, 0.3); margin-bottom: 24px; border: 3px solid #ffeedd; }
+    h2, h3 { margin-top: 0; color: #ff9494; text-align: center; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; text-align: center; }
+    @media (min-width: 500px) {
+      .summary-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .summary-item { padding: 15px 8px; border-radius: 18px; font-weight: 500; }
+    .total-flow { background: #fff4e6; color: #d97706; border: 2px dashed #fcd34d; }
+    .income { background: #e8f7ee; color: #40a067; border: 2px dashed #b9e8ca; }
+    .expense { background: #ffebee; color: #e56b6b; border: 2px dashed #ffcdd2; }
+    .balance { background: #eef4ff; color: #5c7cfa; border: 2px dashed #c0d4ff; }
+    .summary-item span { display: block; font-size: 1.15rem; margin-top: 4px; font-weight: 600; }
+
+    form, .search-box { display: flex; flex-direction: column; gap: 12px; }
+    .form-group { display: flex; gap: 10px; }
+    input, select, button { padding: 12px 16px; border: 2px solid #ffe3d8; border-radius: 16px; font-size: 14px; outline: none; background: #fffdfb; color: #6d5959; }
+    input:focus, select:focus { border-color: #ff9494; }
+    input[type="text"], input[type="number"], select { flex: 1; }
+    button { cursor: pointer; background: #ff9494; color: white; border: none; font-weight: 600; box-shadow: 0 4px 0 #e67373; transition: all 0.1s; }
+    button:active { transform: translateY(4px); box-shadow: none; }
+    button.btn-clear { background: #ffc4c4; color: #6d5959; box-shadow: 0 4px 0 #e0a3a3; width: 100%; margin-top: 15px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #fffbf7; margin-bottom: 10px; border-radius: 18px; border: 2px solid #fff0e5; }
+    .tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #ffe5e5; color: #ff6b6b; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🍰 บัญชีเจ้าเหมียวพาสเทล 🐾</h2>
+    <div class="summary-grid">
+      <div class="summary-item total-flow">ยอดรวมรับ-จ่าย<span id="total-flow">฿0.0</span></div>
+      <div class="summary-item income">รายรับรวม<span id="total-income">฿0.0</span></div>
+      <div class="summary-item expense">รายจ่ายรวม<span id="total-expense">฿0.0</span></div>
+      <div class="summary-item balance">คงเหลือสุทธิ<span id="total-balance">฿0.0</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>✨ จดบันทึกประจำวัน ✨</h3>
+    <form id="tx-form">
+      <div class="form-group">
+        <input type="text" id="tx-title" placeholder="พิมพ์ชื่อรายการ..." required>
+        <input type="number" id="tx-amount" placeholder="จำนวนเงิน" min="0.01" step="any" required>
+      </div>
+      <div class="form-group">
+        <select id="tx-type">
+          <option value="income">🌱 รายรับ</option>
+          <option value="expense">🍓 รายจ่าย</option>
+        </select>
+        <select id="tx-category">
+          <option value="🍔 อาหาร">🍔 อาหาร</option>
+          <option value="🚗 เดินทาง">🚗 เดินทาง</option>
+          <option value="🛍️ ช้อปปิ้ง">🛍️ ช้อปปิ้ง</option>
+          <option value="💵 เงินเดือน">💵 เงินเดือน</option>
+          <option value="📦 อื่นๆ">📦 อื่นๆ</option>
+        </select>
+      </div>
+      <button type="submit">🎀 เพิ่มรายการใหม่</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>📑 ประวัติรายการธุรกรรม</h3>
+    <!-- โจทย์ที่ 2: ช่องค้นหาแบบ Real-time -->
+    <div class="search-box" style="margin-bottom: 15px;">
+      <input type="text" id="search-input" placeholder="🔍 ค้นหาตามชื่อรายการแบบ Real-time...">
+    </div>
+    <ul id="tx-list"></ul>
+    <button class="btn-clear" id="btn-clear-all">🧹 ล้างข้อมูลทั้งหมด</button>
+  </div>
+
+  <script>
+    let transactions = [];
+    let nextId = 1;
+
+    const form = document.getElementById('tx-form');
+    const titleInput = document.getElementById('tx-title');
+    const amountInput = document.getElementById('tx-amount');
+    const typeSelect = document.getElementById('tx-type');
+    const categorySelect = document.getElementById('tx-category');
+    const searchInput = document.getElementById('search-input');
+    const listElement = document.getElementById('tx-list');
+    
+    const totalFlowEl = document.getElementById('total-flow');
+    const totalIncomeEl = document.getElementById('total-income');
+    const totalExpenseEl = document.getElementById('total-expense');
+    const totalBalanceEl = document.getElementById('total-balance');
+    const clearBtn = document.getElementById('btn-clear-all');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      transactions.push({ 
+        id: nextId++, 
+        title: titleInput.value.trim(), 
+        amount: parseFloat(amountInput.value), 
+        type: typeSelect.value, 
+        category: categorySelect.value 
+      });
+      titleInput.value = ''; 
+      amountInput.value = '';
+      renderApp();
+    });
+
+    searchInput.addEventListener('input', renderList);
+
+    function updateSummary() {
+      const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+      const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+      const totalFlow = income + expense; // ยอดรวมรายรับ + รายจ่าย
+      const balance = income - expense;   // คงเหลือสุทธิ
+
+      totalFlowEl.textContent = totalFlow === 0 ? '฿0.0' : `฿${totalFlow.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
+      totalIncomeEl.textContent = income === 0 ? '฿0.0' : `฿${income.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
+      totalExpenseEl.textContent = expense === 0 ? '฿0.0' : `฿${expense.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
+      totalBalanceEl.textContent = (income === 0 && expense === 0) ? '฿0.0' : `฿${balance.toLocaleString('th-TH', {minimumFractionDigits: 2})}`;
+    }
+
+    function renderList() {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = transactions.filter(t => t.title.toLowerCase().includes(keyword));
+      listElement.innerHTML = '';
+
+      if (filtered.length === 0) {
+        listElement.innerHTML = '<li style="justify-content: center; color: #c4b0b0;">ยังไม่มีรายการธุรกรรม 🧸</li>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const li = document.createElement('li');
+        const isIncome = item.type === 'income';
+        const amountFormatted = (isIncome ? '+' : '-') + item.amount.toLocaleString('th-TH', {minimumFractionDigits: 2});
+        li.innerHTML = `
+          <div>
+            <strong style="color: #ff9494;">#${item.id}</strong> 
+            <span class="tag">${item.category}</span>
+            <span>${item.title}</span>
+          </div>
+          <span style="color: ${isIncome ? '#40a067' : '#e56b6b'}; font-weight: 600;">${amountFormatted}</span>
+        `;
+        listElement.appendChild(li);
+      });
+    }
+
+    clearBtn.addEventListener('click', () => {
+      if (transactions.length === 0) return;
+      if (confirm('คุณต้องการล้างข้อมูลประวัติทั้งหมดใช่หรือไม่?')) {
+        transactions = []; 
+        nextId = 1; 
+        renderApp();
+      }
+    });
+
+    function renderApp() { 
+      renderList(); 
+      updateSummary(); 
+    }
+
+    renderApp();
+  </script>
+</body>
+</html>
