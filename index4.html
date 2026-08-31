@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ATELIER - LUXURY BISTRO & BAR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --bg-main: #1a120c;         /* น้ำตาลเข้มจัด อ่านง่าย */
+            --card-bg: #2b1f17;         /* น้ำตาลการ์ด */
+            --text-light: #f5eae1;      /* ครีมสว่าง ชัดเจน */
+            --gold-accent: #d4af37;     /* ทองสว่าง */
+            --border-color: #4a3728;    /* เส้นขอบน้ำตาลกลาง */
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .brand-font { font-family: 'Cormorant Garamond', serif; }
+
+        /* Navigation */
+        .navbar {
+            background-color: #120c08 !important;
+            border-bottom: 2px solid var(--gold-accent);
+        }
+
+        .nav-link {
+            color: #d9c8b8 !important;
+            font-size: 1.05rem;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold-accent) !important;
+            font-weight: 600;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(180deg, #120c08 0%, #2b1f17 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 40px 20px;
+        }
+
+        /* Item & Zone Cards */
+        .item-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .item-card:hover {
+            border-color: var(--gold-accent);
+            transform: translateY(-3px);
+        }
+
+        .price-text {
+            color: var(--gold-accent);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .btn-gold {
+            background-color: var(--gold-accent);
+            color: #1a120c;
+            border: none;
+            font-weight: 600;
+            border-radius: 25px;
+            padding: 10px 25px;
+        }
+
+        .btn-gold:hover {
+            background-color: #f1c84b;
+            color: #1a120c;
+        }
+
+        /* Page Switcher Animation */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal Custom Theme */
+        .modal-content {
+            background-color: #231810;
+            color: var(--text-light);
+            border: 1px solid var(--gold-accent);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+        <div class="container">
+            <a class="navbar-brand brand-font fw-bold fs-2 text-warning" href="#" onclick="switchPage('drinks', this)">✦ THE ATELIER</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <a class="nav-link active" onclick="switchPage('drinks', this)">เครื่องดื่ม & ไฮไลต์</a>
+                    <a class="nav-link" onclick="switchPage('food', this)">เมนูอาหาร</a>
+                    <a class="nav-link" onclick="switchPage('booking', this)">จองโต๊ะ (5 โซน)</a>
+                    <button class="btn btn-gold btn-sm ms-lg-3 mt-2 mt-lg-0" id="userBtn" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-person-fill"></i> เข้าสู่ระบบ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-banner text-center mb-5">
+        <h1 class="display-3 brand-font fw-bold text-warning mb-1">THE ATELIER</h1>
+        <p class="fs-5 text-uppercase mb-0" style="letter-spacing: 3px; color: #b8a490;">PREMIUM BISTRO & SPEAKEASY BAR</p>
+    </div>
+
+    <div class="container pb-5">
+
+        <div id="drinks" class="page-section active">
+            <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-4">
+                <h3 class="fw-bold mb-0 text-warning"><i class="bi bi-cup-straw"></i> เมนูเครื่องดื่มยอดนิยม (Preview)</h3>
+                <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#allDrinksModal">
+                    <i class="bi bi-journal-text"></i> ดูเมนูเครื่องดื่มทั้งหมด (30+ รายการ)
+                </button>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">LEO Beer (ลีโอ)</h5>
+                            <small class="text-muted">ขวดใหญ่ แช่เย็นจัด</small>
+                        </div>
+                        <span class="price-text">120 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Singha Reserve</h5>
+                            <small class="text-muted">รสเข้ม นุ่มลึก</small>
+                        </div>
+                        <span class="price-text">140 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">SangSom Set</h5>
+                            <small class="text-muted">แสงโสม + มิกเซอร์ 4 ขวด</small>
+                        </div>
+                        <span class="price-text">590 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Regency V.S.O.P.</h5>
+                            <small class="text-muted">บรั่นดีไทย ยอดฮิต</small>
+                        </div>
+                        <span class="price-text">980 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Atelier Golden Hour</h5>
+                            <small class="text-muted">Signature Cocktail</small>
+                        </div>
+                        <span class="price-text">340 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Johnnie Walker Black</h5>
+                            <small class="text-muted">วิสกี้พรีเมียม 1 ลิตร</small>
+                        </div>
+                        <span class="price-text">1,890 ฿</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-warning btn-lg rounded-pill px-5" data-bs-toggle="modal" data-bs-target="#allDrinksModal">
+                    คลิกเพื่อเปิดดูเมนูเครื่องดื่มทั้งหมด 30+ รายการ ✨
+                </button>
+            </div>
+        </div>
+
+        <div id="food" class="page-section">
+            <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-4">
+                <h3 class="fw-bold mb-0 text-warning"><i class="bi bi-egg-fried"></i> เมนูอาหารแนะนำ (Preview)</h3>
+                <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#allFoodModal">
+                    <i class="bi bi-journal-text"></i> ดูเมนูอาหารทั้งหมด (30+ รายการ)
+                </button>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">🥩 สเต๊กเนื้อวากิวทรัฟเฟิล</h5>
+                            <small class="text-muted">เนื้อวากิวย่างเนยทรัฟเฟิลหอมนวล</small>
+                        </div>
+                        <span class="price-text">590 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">🍣 ยำแซลมอนนอร์เวย์สด</h5>
+                            <small class="text-muted">แซลมอนสด ยำน้ำปลาร้าสุดแซ่บ</small>
+                        </div>
+                        <span class="price-text">320 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">🍗 เอ็นไก่ทอดงาซอสมัสตาร์ด</h5>
+                            <small class="text-muted">กับแกล้มกรุบกรอบยอดฮิต</small>
+                        </div>
+                        <span class="price-text">190 ฿</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="item-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">🍲 ต้มแซ่บกระดูกอ่อนหม้อไฟ</h5>
+                            <small class="text-muted">รสเผ็ดเปรี้ยว ซดร้อนๆ แก้แฮงค์</small>
+                        </div>
+                        <span class="price-text">350 ฿</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-warning btn-lg rounded-pill px-5" data-bs-toggle="modal" data-bs-target="#allFoodModal">
+                    คลิกเพื่อเปิดดูเมนูอาหารทั้งหมด 30+ รายการ ✨
+                </button>
+            </div>
+        </div>
+
+        <div id="booking" class="page-section">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold brand-font display-4 text-warning">RESERVATION & 5 VIP ZONES</h2>
+                <p class="text-muted fs-5">เลือกระดับโซนนั่งที่คุณชื่นชอบ พร้อมราคาและสิทธิพิเศษ</p>
+            </div>
+
+            <div id="loginWarning" class="alert alert-warning text-center rounded-3 mb-4" style="background-color: #382c16; border-color: #d4af37; color: #f5eae1;">
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i> <strong>กรุณาเข้าสู่ระบบก่อนทำการจองโต๊ะ</strong> 
+                <button class="btn btn-sm btn-gold ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">เข้าสู่ระบบ / สมัครสมาชิก</button>
+            </div>
+
+            <div class="row g-3 mb-5">
+                <div class="col-md-6 col-lg-4">
+                    <div class="item-card text-center h-100">
+                        <span class="badge bg-secondary mb-2">ระดับ 1</span>
+                        <h4 class="fw-bold">1. Counter Bar Zone</h4>
+                        <p class="text-muted small">สำหรับ 1-2 ท่าน (นั่งชิลริมบาร์)</p>
+                        <h3 class="text-warning fw-bold">800 ฿</h3>
+                        <small class="text-muted">*เครดิตแลกเครื่องดื่มได้เต็มจำนวน</small>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="item-card text-center h-100">
+                        <span class="badge bg-secondary mb-2">ระดับ 2</span>
+                        <h4 class="fw-bold">2. Standard Table</h4>
+                        <p class="text-muted small">สำหรับ 2-4 ท่าน (โซนกลางร้าน)</p>
+                        <h3 class="text-warning fw-bold">1,500 ฿</h3>
+                        <small class="text-muted">*เครดิตแลกอาหารและเครื่องดื่ม</small>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="item-card text-center h-100" style="border-color: var(--gold-accent);">
+                        <span class="badge bg-warning text-dark mb-2">ระดับ 3 (Popular)</span>
+                        <h4 class="fw-bold">3. Front Stage Zone</h4>
+                        <p class="text-muted small">ติดขอบเวทีดนตรีสด (4-6 ท่าน)</p>
+                        <h3 class="text-warning fw-bold">3,200 ฿</h3>
+                        <small class="text-muted">*ฟรีมิกเซอร์ตลอดคืน + Snack เซ็ต</small>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                    <div class="item-card text-center h-100">
+                        <span class="badge bg-danger mb-2">ระดับ 4</span>
+                        <h4 class="fw-bold text-danger">4. VIP Leather Sofa</h4>
+                        <p class="text-muted small">โซฟาหนังส่วนตัว หน้ากระจกวิวเมือง (6-8 ท่าน)</p>
+                        <h3 class="text-warning fw-bold">5,500 ฿</h3>
+                        <small class="text-muted">*ฟรี Black Label 1 ขวด + ผู้ดูแลโต๊ะ</small>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6">
+                    <div class="item-card text-center h-100" style="background: linear-gradient(135deg, #2b1f17 0%, #4a3728 100%); border: 2px solid var(--gold-accent);">
+                        <span class="badge bg-warning text-dark mb-2">ระดับ 5 (ULTRA LUXURY)</span>
+                        <h4 class="fw-bold text-warning">5. Ultra VVIP Private Room</h4>
+                        <p class="text-light small">ห้องกระจก VIP ส่วนตัว + คาราโอเกะ (8-15 ท่าน)</p>
+                        <h3 class="text-warning fw-bold">9,900 ฿</h3>
+                        <small class="text-light opacity-75">*ฟรี Regency 2 ขวด + แชมเปญ 1 ขวด + ผู้ดูแลส่วนตัว 2 คน</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 mx-auto">
+                <div class="p-4 p-md-5 rounded-4" style="background-color: #231810; border: 1px solid var(--border-color);">
+                    <h3 class="fw-bold text-center mb-4 text-warning">แบบฟอร์มสำรองโต๊ะ</h3>
+                    <form onsubmit="handleBooking(event)">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">ชื่อผู้จอง</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="ระบุชื่อจริง" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">เบอร์โทรศัพท์</label>
+                                <input type="tel" class="form-control bg-dark text-white border-secondary" placeholder="08X-XXX-XXXX" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">เลือกโซนนั่ง (1-5)</label>
+                                <select class="form-select bg-dark text-white border-secondary" required>
+                                    <option value="">-- เลือกโซนที่ต้องการ --</option>
+                                    <option value="1">1. Counter Bar Zone (800 ฿)</option>
+                                    <option value="2">2. Standard Table (1,500 ฿)</option>
+                                    <option value="3">3. Front Stage Zone (3,200 ฿)</option>
+                                    <option value="4">4. VIP Leather Sofa (5,500 ฿)</option>
+                                    <option value="5">5. Ultra VVIP Private Room (9,900 ฿)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">เวลาเข้าใช้บริการ</label>
+                                <input type="time" class="form-control bg-dark text-white border-secondary" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">หมายเหตุเพิ่มเติม</label>
+                                <textarea class="form-control bg-dark text-white border-secondary" rows="3" placeholder="ระบุความต้องการเพิ่มเติม"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100 mt-4 py-2">ยืนยันการจองโต๊ะ ✦</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="allDrinksModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h4 class="modal-title fw-bold text-warning brand-font">📜 เมนูเครื่องดื่มทั้งหมด (30+ รายการ)</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="text-warning border-bottom border-secondary pb-2">🍺 เบียร์ (Beers)</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">1. LEO Beer (120 ฿)</div>
+                        <div class="col-6">2. Singha Beer (140 ฿)</div>
+                        <div class="col-6">3. Chang Cold Brew (130 ฿)</div>
+                        <div class="col-6">4. Heineken (160 ฿)</div>
+                        <div class="col-6">5. Hoegaarden Rosée (220 ฿)</div>
+                        <div class="col-6">6. Hoegaarden Wheat (220 ฿)</div>
+                        <div class="col-6">7. Stella Artois (180 ฿)</div>
+                        <div class="col-6">8. Budweiser (150 ฿)</div>
+                        <div class="col-6">9. Corona Extra (210 ฿)</div>
+                        <div class="col-6">10. Asahi Super Dry (150 ฿)</div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2">🍾 เหล้า & วิสกี้ (Spirits & Whiskeys)</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">11. แสงโสม (ขวด) (390 ฿)</div>
+                        <div class="col-6">12. แสงโสม เซ็ตมิกเซอร์ (590 ฿)</div>
+                        <div class="col-6">13. หงษ์ทอง (ขวด) (350 ฿)</div>
+                        <div class="col-6">14. รีเจนซี่ V.S.O.P. (980 ฿)</div>
+                        <div class="col-6">15. Blend 285 Signature (450 ฿)</div>
+                        <div class="col-6">16. Red Label 1L (1,290 ฿)</div>
+                        <div class="col-6">17. Black Label 1L (1,890 ฿)</div>
+                        <div class="col-6">18. Gold Label Reserve (2,800 ฿)</div>
+                        <div class="col-6">19. Chivas Regal 12Y (1,750 ฿)</div>
+                        <div class="col-6">20. Jack Daniel's Old No.7 (1,650 ฿)</div>
+                        <div class="col-6">21. Suntory Chita Whiskey (2,490 ฿)</div>
+                        <div class="col-6">22. Absolute Vodka (1,200 ฿)</div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2">🍸 ค็อกเทล & มิกเซอร์ (Cocktails & Mixers)</h5>
+                    <div class="row g-2">
+                        <div class="col-6">23. Atelier Golden Hour (340 ฿)</div>
+                        <div class="col-6">24. Velvet Creamy Night (360 ฿)</div>
+                        <div class="col-6">25. Mojito Classic (280 ฿)</div>
+                        <div class="col-6">26. Long Island Iced Tea (320 ฿)</div>
+                        <div class="col-6">27. Margarita (290 ฿)</div>
+                        <div class="col-6">28. Cosmopolitan (280 ฿)</div>
+                        <div class="col-6">29. โซดา / โค้ก / น้ำดื่ม (35 ฿)</div>
+                        <div class="col-6">30. น้ำแข็งถังใหญ่ (50 ฿)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="allFoodModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h4 class="modal-title fw-bold text-warning brand-font">🍽️ เมนูอาหารทั้งหมด (30+ รายการ)</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="text-warning border-bottom border-secondary pb-2">กับแกล้ม & ทานเล่น (Appetizers)</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">1. เอ็นไก่ทอดงา (190 ฿)</div>
+                        <div class="col-6">2. เฟรนช์ฟรายส์ดิปชีส (140 ฿)</div>
+                        <div class="col-6">3. หมูสามชั้นทอดน้ำปลา (220 ฿)</div>
+                        <div class="col-6">4. ข้อไก่ทอดสมุนไพร (180 ฿)</div>
+                        <div class="col-6">5. เม็ดมะม่วงหิมพานต์คั่วทอด (160 ฿)</div>
+                        <div class="col-6">6. ปีกไก่บนทอดเกลือ (180 ฿)</div>
+                        <div class="col-6">7. เกี๊ยวซ่าทอดซอสเกาหลี (170 ฿)</div>
+                        <div class="col-6">8. ถั่วแระญี่ปุ่นอบเกลือ (120 ฿)</div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2">ยำ & แซ่บซี๊ด (Spicy Dishes)</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">9. ยำแซลมอนนอร์เวย์สด (320 ฿)</div>
+                        <div class="col-6">10. กุ้งแช่น้ำปลาวาซาบิ (250 ฿)</div>
+                        <div class="col-6">11. ยำวุ้นเส้นโบราณหมูสับ (200 ฿)</div>
+                        <div class="col-6">12. หมูมะนาวสะดุ้งไฟ (220 ฿)</div>
+                        <div class="col-6">13. ยำสามกรอบ (220 ฿)</div>
+                        <div class="col-6">14. ยำเม็ดมะม่วงไข่เค็ม (190 ฿)</div>
+                        <div class="col-6">15. ลาบหมูทอดกรอบ (200 ฿)</div>
+                        <div class="col-6">16. ต้มแซ่บกระดูกอ่อนหม้อไฟ (350 ฿)</div>
+                        <div class="col-6">17. ต้มยำกุ้งแม่น้ำน้ำข้น (420 ฿)</div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2">จานหลัก & สเต๊ก (Main Courses)</h5>
+                    <div class="row g-2">
+                        <div class="col-6">18. สเต๊กเนื้อวากิวทรัฟเฟิล (590 ฿)</div>
+                        <div class="col-6">19. สเต๊กพอร์คช็อปซอสพริกไทยดำ (320 ฿)</div>
+                        <div class="col-6">20. ขาหมูเยอรมันทอดกรอบ (580 ฿)</div>
+                        <div class="col-6">21. สปาเกตตีคาโบนารา (280 ฿)</div>
+                        <div class="col-6">22. สปาเกตตีขี้เมาทะเล (290 ฿)</div>
+                        <div class="col-6">23. ข้าวผัดมันกุ้งแม่น้ำ (280 ฿)</div>
+                        <div class="col-6">24. ข้าวผัดปูจานใหญ่ (350 ฿)</div>
+                        <div class="col-6">25. ปลากะพงทอดน้ำปลา (480 ฿)</div>
+                        <div class="col-6">26. กุ้งซอสมะขาม (380 ฿)</div>
+                        <div class="col-6">27. หมึกผัดไข่เค็ม (280 ฿)</div>
+                        <div class="col-6">28. กะเพราเนื้อวากิวไข่ดาว (250 ฿)</div>
+                        <div class="col-6">29. ข้าวเนื้อเค็มแดดเดียว (190 ฿)</div>
+                        <div class="col-6">30. ซี่โครงหมูบาร์บีคิวอบ (450 ฿)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-0">
+                    <h4 class="modal-title fw-bold text-warning">✦ เข้าสู่ระบบสมาชิก</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="handleLogin(event)">
+                        <div class="mb-3">
+                            <label class="form-label">อีเมล / เบอร์โทรศัพท์</label>
+                            <input type="text" id="loginUser" class="form-control bg-dark text-white border-secondary" placeholder="กรอกอีเมลหรือเบอร์โทร" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">รหัสผ่าน</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100 py-2 mt-2">เข้าสู่ระบบ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isLoggedIn = false;
+
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value;
+            isLoggedIn = true;
+            
+            document.getElementById('userBtn').innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> คุณ: ${user}`;
+            document.getElementById('loginWarning').style.display = 'none';
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+            modal.hide();
+
+            alert('เข้าสู่ระบบสำเร็จแล้วครับ!');
+        }
+
+        function handleBooking(e) {
+            e.preventDefault();
+            if (!isLoggedIn) {
+                alert('กรุณาเข้าสู่ระบบก่อนทำการจองโต๊ะนะครับ!');
+                const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+                modal.show();
+            } else {
+                alert('ส่งข้อมูลจองโต๊ะเรียบร้อยแล้วครับ! ทางร้านจะติดต่อกลับเพื่อยืนยัน');
+            }
+        }
+    </script>
+</body>
+</html>
