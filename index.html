@@ -1,638 +1,290 @@
 <!DOCTYPE html>
-<html lang="th" class="dark">
+<html lang="th" class="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dino Cookie Adventure - เกมไดโนเสาร์วิ่งเก็บเพชร</title>
+  <title>Currency Converter - โปรแกรมแปลงสกุลเงินสองทิศทาง</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: { 400: '#f43f5e', 500: '#e11d48', 600: '#be123c' }
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    /* Accessibility: Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
+    /* Custom Scrollbar for History */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
     }
-    /* Accessibility: Forced Colors */
-    @media (forced-colors: active) {
-      button, section, article { border: 2px solid ButtonText !important; }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.5);
+      border-radius: 8px;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-amber-100 via-rose-100 to-indigo-100 dark:from-slate-900 dark:via-purple-950 dark:to-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300 flex flex-col justify-between">
+<body class="bg-slate-100 text-slate-800 min-h-screen font-sans flex flex-col justify-between p-4 sm:p-6">
 
-  <!-- Header Section -->
-  <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-rose-200 dark:border-purple-800 p-4 sticky top-0 z-50 shadow-md">
-    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
-      <div class="flex items-center gap-2">
-        <span class="text-3xl animate-bounce">🦖</span>
-        <h1 class="text-2xl font-black tracking-wide bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
-          Dino Cookie Adventure
-        </h1>
-      </div>
+  <!-- Main Container -->
+  <main class="max-w-2xl mx-auto w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-8 my-auto space-y-6">
+    
+    <!-- Header & โจทย์ที่ 4: แสดงเวลาที่อัปเดตล่าสุด -->
+    <header class="text-center space-y-2 border-b border-slate-100 pb-4">
+      <h1 class="text-2xl sm:text-3xl font-black text-indigo-600 flex items-center justify-center gap-2">
+        💱 โปรแกรมแปลงสกุลเงิน
+      </h1>
+      <!-- โจทย์ที่ 4 -->
+      <p class="text-xs sm:text-sm font-medium text-slate-500 flex items-center justify-center gap-1">
+        🕒 อัปเดตล่าสุด: <span id="lastUpdated" class="font-bold text-slate-700">กำลังโหลด...</span>
+      </p>
+    </header>
+
+    <!-- Converter Section -->
+    <section class="space-y-4">
       
-      <!-- Controls Bar -->
-      <div class="flex flex-wrap items-center justify-center gap-2">
-        <button id="pauseGameBtn" type="button" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95">
-          ⏸️ หยุดเกม
-        </button>
-        <button id="howToPlayBtn" type="button" class="px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-md">
-          📖 วิธีเล่น
-        </button>
-        <button id="toggleThemeBtn" type="button" class="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded-xl text-xs font-bold transition-all shadow-md">
-          🌙/☀️ โหมด
-        </button>
-        <button id="resetGameBtn" type="button" class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95">
-          🔄 เริ่มใหม่
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Game Stage -->
-  <main class="max-w-4xl mx-auto w-full p-4 space-y-4">
-
-    <!-- Difficulty Level Selector -->
-    <section class="bg-white/90 dark:bg-slate-800/90 p-3 rounded-2xl shadow-lg border border-rose-100 dark:border-purple-900 backdrop-blur-sm">
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
-        <span class="text-xs font-bold text-rose-600 dark:text-purple-300">⚡ ความเร็วการวิ่ง (Speed):</span>
-        <div class="flex gap-2 w-full sm:w-auto">
-          <button id="btnLevelEasy" type="button" class="flex-1 sm:flex-none py-1.5 px-4 bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
-            ง่าย (Easy)
-          </button>
-          <button id="btnLevelMedium" type="button" class="flex-1 sm:flex-none py-1.5 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all">
-            ปานกลาง (Medium)
-          </button>
-          <button id="btnLevelHard" type="button" class="flex-1 sm:flex-none py-1.5 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all">
-            ยาก (Hard)
-          </button>
+      <!-- Amount One & Currency One -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-2">
+          <label for="amountOne" class="block text-xs font-bold text-slate-600 mb-1">จำนวนเงินต้นทาง (amount-one)</label>
+          <input id="amountOne" type="number" placeholder="0.00" min="0" step="any"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
         </div>
+        <div>
+          <label for="currencyOne" class="block text-xs font-bold text-slate-600 mb-1">สกุลเงินต้นทาง</label>
+          <select id="currencyOne" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+            <option value="USD">USD - สหรัฐฯ</option>
+            <option value="THB" selected>THB - ไทย</option>
+            <option value="EUR">EUR - ยูโร</option>
+            <option value="JPY">JPY - ญี่ปุ่น</option>
+            <option value="GBP">GBP - อังกฤษ</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Swap Icon & Exchange Rate Display -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 py-2">
+        <button id="swapBtn" type="button" title="สลับสกุลเงิน"
+          class="p-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-full transition-all active:scale-95 shadow-sm">
+          🔄 สลับ
+        </button>
+        <div id="rateDisplay" class="text-xs sm:text-sm font-semibold text-slate-500 text-center sm:text-right">
+          อัตราแลกเปลี่ยน: 1 THB = ... USD
+        </div>
+      </div>
+
+      <!-- Amount Two & Currency Two -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-2">
+          <label for="amountTwo" class="block text-xs font-bold text-slate-600 mb-1">จำนวนเงินปลายทาง (amount-two)</label>
+          <input id="amountTwo" type="number" placeholder="0.00" min="0" step="any"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+        </div>
+        <div>
+          <label for="currencyTwo" class="block text-xs font-bold text-slate-600 mb-1">สกุลเงินปลายทาง</label>
+          <select id="currencyTwo" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+            <option value="USD" selected>USD - สหรัฐฯ</option>
+            <option value="THB">THB - ไทย</option>
+            <option value="EUR">EUR - ยูโร</option>
+            <option value="JPY">JPY - ญี่ปุ่น</option>
+            <option value="GBP">GBP - อังกฤษ</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- โจทย์ที่ 3: ปุ่มล้างข้อมูล -->
+      <div class="pt-2">
+        <button id="resetBtn" type="button"
+          class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl text-xs sm:text-sm transition-all active:scale-98">
+          🗑️ ล้างข้อมูล
+        </button>
       </div>
     </section>
 
-    <!-- Canvas Game Display -->
-    <section class="bg-white/90 dark:bg-slate-800/90 p-4 rounded-3xl shadow-2xl border-2 border-rose-200 dark:border-purple-800 flex flex-col items-center backdrop-blur-sm" aria-label="สนามวิ่งไดโนเสาร์">
-      
-      <!-- Scoreboard -->
-      <div class="w-full flex justify-between items-center mb-3 px-2">
-        <div class="flex gap-4 items-center">
-          <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400">HI: <span id="highScoreDisplay">00000</span></span>
-          <span class="text-xs font-black text-amber-500">💎 เพชร: <span id="gemCountDisplay">0</span></span>
-        </div>
-        <div class="text-lg font-black bg-gradient-to-r from-rose-500 to-indigo-500 bg-clip-text text-transparent">
-          SCORE: <span id="scoreDisplay">00000</span>
-        </div>
-      </div>
-
-      <!-- Canvas Screen -->
-      <div class="relative w-full overflow-hidden rounded-2xl border-4 border-amber-300 dark:border-purple-600 shadow-inner">
-        <canvas id="gameCanvas" width="800" height="260" class="w-full h-auto block"></canvas>
-      </div>
-
-      <!-- Status Alert Bar -->
-      <div id="statusAlert" class="w-full mt-3 p-3 bg-amber-50 dark:bg-purple-900/30 text-amber-800 dark:text-purple-200 text-xs font-bold rounded-2xl text-center border border-amber-200 dark:border-purple-700 transition-all shadow-sm" role="alert">
-        กด [ Spacebar / ↑ ] กระโดด | กด [ ลูกศรลง ↓ / S ] ก้มหลบนก | กด [ P ] หยุดเกม
-      </div>
-
-      <!-- Jump & Crouch Buttons for Mobile Touch -->
-      <div class="grid grid-cols-2 gap-3 w-full mt-3 md:hidden">
-        <button id="mobileCrouchBtn" type="button" class="py-3 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg transition-all">
-          👇 กดก้มหลบ
-        </button>
-        <button id="mobileJumpBtn" type="button" class="py-3 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg transition-all">
-          🦘 กดกระโดด
+    <!-- โจทย์ที่ 2: ประวัติการแปลงเงิน -->
+    <section class="border-t border-slate-100 pt-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-extrabold text-slate-700 flex items-center gap-1.5">
+          📜 ประวัติการแปลงเงินย้อนหลัง (10 รายการล่าสุด)
+        </h2>
+        <button id="clearHistoryBtn" type="button"
+          class="text-xs font-bold text-rose-500 hover:text-rose-600 hover:underline transition-all">
+          ล้างประวัติ
         </button>
       </div>
 
+      <!-- History List Display -->
+      <ul id="historyList" class="custom-scrollbar max-h-48 overflow-y-auto space-y-2 pr-1 text-xs sm:text-sm">
+        <li class="text-center py-4 text-slate-400 font-medium italic">ยังไม่มีประวัติการแปลงเงิน</li>
+      </ul>
     </section>
+
   </main>
 
-  <!-- Footer Notice -->
-  <footer class="text-center py-4 text-xs font-bold text-slate-500 dark:text-slate-400">
-    🦖 Dino Cookie Run Style - กระโดดข้ามกระบองเพชร ก้มหลบนก และวิ่งเก็บเพชรให้ได้มากที่สุด!
+  <footer class="text-center text-xs font-bold text-slate-400 pb-2">
+    Assignment 2 - Two-way Currency Converter App
   </footer>
 
-  <!-- Modal Instructions -->
-  <dialog id="howToModal" class="p-6 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-3xl shadow-2xl backdrop:bg-black/60 max-w-md w-full border-2 border-rose-300 dark:border-purple-700">
-    <form method="dialog" class="space-y-4">
-      <h2 class="text-xl font-black bg-gradient-to-r from-rose-500 to-indigo-500 bg-clip-text text-transparent">📖 วิธีเล่น Dino Cookie Adventure</h2>
-      <ul class="list-disc list-inside text-xs sm:text-sm space-y-2 text-slate-600 dark:text-slate-300 font-medium">
-        <li><strong>กระโดด:</strong> กดปุ่ม <code>Spacebar</code> หรือ <code>ลูกศรขึ้น (↑)</code> เพื่อหลบกระบองเพชร</li>
-        <li><strong>ก้มหลบ:</strong> กดปุ่ม <code>ลูกศรลง (↓)</code> หรือ <code>S</code> เพื่อก้มหลบนกปีศาจที่บินมา</li>
-        <li><strong>เก็บเพชร 💎:</strong> กระโดดเก็บเพชรสีฟ้าเพื่อบวกคะแนนพิเศษ +50 คะแนน!</li>
-        <li><strong>หยุดเกม:</strong> กดปุ่ม <code>P</code> หรือ <code>Esc</code> หรือกดปุ่ม ⏸️ หยุดเกม ด้านบน</li>
-      </ul>
-      <div class="text-center pt-2">
-        <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-indigo-500 hover:opacity-90 text-white font-extrabold rounded-full text-xs shadow-lg transition-all">
-          ลุยเลย!
-        </button>
-      </div>
-    </form>
-  </dialog>
-
-  <!-- Game Logic JavaScript -->
+  <!-- Application Logic JavaScript -->
   <script>
-    // Canvas Setup
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    // Elements
+    const amountOne = document.getElementById('amountOne');
+    const amountTwo = document.getElementById('amountTwo');
+    const currencyOne = document.getElementById('currencyOne');
+    const currencyTwo = document.getElementById('currencyTwo');
+    const rateDisplay = document.getElementById('rateDisplay');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const swapBtn = document.getElementById('swapBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const historyList = document.getElementById('historyList');
 
-    // Game State
-    const state = {
-      level: 'easy',
-      score: 0,
-      gems: 0,
-      highScore: 0,
-      gameSpeed: 5,
-      isGameOver: false,
-      isGameStarted: false,
-      isPaused: false,
-      frameCount: 0,
-      gravity: 0.65
-    };
+    // App State
+    let rates = {};
+    let history = [];
+    let historyTimeout = null;
 
-    // Dino Object
-    const dino = {
-      x: 60,
-      normalY: 170,
-      crouchY: 190,
-      y: 170,
-      width: 44,
-      normalHeight: 48,
-      crouchHeight: 28,
-      height: 48,
-      dy: 0,
-      jumpForce: -12,
-      isGrounded: true,
-      isCrouching: false,
-      
-      jump() {
-        if (this.isGrounded && !this.isCrouching) {
-          this.dy = this.jumpForce;
-          this.isGrounded = false;
-        }
-      },
-      setCrouch(crouch) {
-        if (this.isGrounded) {
-          this.isCrouching = crouch;
-          if (crouch) {
-            this.height = this.crouchHeight;
-            this.y = this.crouchY;
-          } else {
-            this.height = this.normalHeight;
-            this.y = this.normalY;
-          }
-        }
-      },
-      update() {
-        if (!this.isGrounded) {
-          this.dy += state.gravity;
-          this.y += this.dy;
-        }
-
-        const currentGround = this.isCrouching ? this.crouchY : this.normalY;
-        if (this.y >= currentGround) {
-          this.y = currentGround;
-          this.dy = 0;
-          this.isGrounded = true;
-        }
-      },
-      draw() {
-        // Dino Body Colors (Cookie / Dino theme)
-        ctx.fillStyle = '#f97316'; // Vivid Orange Dino Body
+    // Fetch Rates & Last Updated Time (โจทย์ที่ 4)
+    async function fetchRates() {
+      try {
+        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        const data = await response.json();
         
-        if (this.isCrouching) {
-          // Crouching Dino Body
-          ctx.fillRect(this.x, this.y, 52, 24);
-          ctx.fillRect(this.x + 36, this.y - 6, 18, 18); // Head down
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(this.x + 46, this.y - 3, 4, 4); // Eye
-          ctx.fillStyle = '#374151';
-          ctx.fillRect(this.x + 48, this.y - 2, 2, 2);
-        } else {
-          // Normal Dino Head
-          ctx.fillRect(this.x + 18, this.y, 24, 18);
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(this.x + 30, this.y + 4, 5, 5); // Eye
-          ctx.fillStyle = '#111827';
-          ctx.fillRect(this.x + 33, this.y + 5, 2, 2);
+        rates = data.rates;
 
-          ctx.fillStyle = '#f97316';
-          // Body & Tail
-          ctx.fillRect(this.x, this.y + 14, 30, 24);
-          ctx.fillRect(this.x - 10, this.y + 18, 12, 8);
-          // Pink Backpack/Shell (Cookie Run Style)
-          ctx.fillStyle = '#ec4899';
-          ctx.fillRect(this.x + 2, this.y + 12, 12, 16);
+        // แสดงเวลาอัปเดตล่าสุด
+        const updateDate = new Date(data.time_last_update_utc);
+        lastUpdated.textContent = updateDate.toLocaleString('th-TH', {
+          dateStyle: 'medium',
+          timeStyle: 'medium'
+        });
 
-          // Animated Legs
-          ctx.fillStyle = '#ea580c';
-          if (!this.isGrounded) {
-            ctx.fillRect(this.x + 6, this.y + 38, 6, 10);
-            ctx.fillRect(this.x + 18, this.y + 38, 6, 6);
-          } else {
-            if (Math.floor(state.frameCount / 5) % 2 === 0) {
-              ctx.fillRect(this.x + 6, this.y + 38, 6, 10);
-              ctx.fillRect(this.x + 20, this.y + 38, 6, 5);
-            } else {
-              ctx.fillRect(this.x + 6, this.y + 38, 6, 5);
-              ctx.fillRect(this.x + 20, this.y + 38, 6, 10);
-            }
-          }
-        }
-      }
-    };
-
-    // Obstacles (Cactus & Flying Birds)
-    let obstacles = [];
-    class Obstacle {
-      constructor(type) {
-        this.type = type; // 'cactus' or 'bird'
-        this.x = canvas.width;
-        
-        if (type === 'cactus') {
-          this.width = Math.random() > 0.5 ? 26 : 18;
-          this.height = 44;
-          this.y = 218 - this.height;
-        } else { // Flying Bird
-          this.width = 32;
-          this.height = 24;
-          this.y = 152; // Height that requires crouching or low jump
-        }
-      }
-      draw() {
-        if (this.type === 'cactus') {
-          // Colorful Cactus
-          ctx.fillStyle = '#10b981'; // Emerald Green
-          ctx.fillRect(this.x + 6, this.y, this.width - 12, this.height);
-          ctx.fillRect(this.x, this.y + 10, 8, 14);
-          ctx.fillRect(this.x + this.width - 8, this.y + 16, 8, 12);
-          // Flower on top
-          ctx.fillStyle = '#f43f5e';
-          ctx.fillRect(this.x + (this.width / 2) - 3, this.y - 6, 6, 6);
-        } else {
-          // Animated Flying Bird
-          ctx.fillStyle = '#a855f7'; // Purple Bird
-          ctx.fillRect(this.x, this.y + 6, this.width, 12);
-          ctx.fillRect(this.x + 20, this.y + 2, 10, 8); // Head
-          ctx.fillStyle = '#f59e0b';
-          ctx.fillRect(this.x + 30, this.y + 4, 6, 4); // Beak
-          
-          // Wings animation
-          ctx.fillStyle = '#c084fc';
-          const wingY = Math.floor(state.frameCount / 6) % 2 === 0 ? this.y - 8 : this.y + 14;
-          ctx.fillRect(this.x + 10, wingY, 12, 8);
-        }
-      }
-      update() {
-        this.x -= state.gameSpeed;
+        updateRatesDisplay();
+      } catch (error) {
+        lastUpdated.textContent = 'ไม่สามารถดึงข้อมูลเวลาได้';
+        rateDisplay.textContent = 'เกิดข้อผิดพลาดในการโหลดอัตราแลกเปลี่ยน';
       }
     }
 
-    // Collectible Gems (Cookie Run Style)
-    let gemsList = [];
-    class Gem {
-      constructor() {
-        this.x = canvas.width;
-        this.width = 16;
-        this.height = 16;
-        this.y = Math.random() > 0.5 ? 130 : 175; // Low or High Floating Gem
-        this.collected = false;
-      }
-      draw() {
-        if (this.collected) return;
-        // Shiny Cyan Diamond
-        ctx.fillStyle = '#06b6d4';
-        ctx.beginPath();
-        ctx.moveTo(this.x + 8, this.y);
-        ctx.lineTo(this.x + 16, this.y + 8);
-        ctx.lineTo(this.x + 8, this.y + 16);
-        ctx.lineTo(this.x, this.y + 8);
-        ctx.closePath();
-        ctx.fill();
+    // Update Exchange Rate Text State
+    function updateRatesDisplay() {
+      const curr1 = currencyOne.value;
+      const curr2 = currencyTwo.value;
 
-        // Highlight Sparkle
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(this.x + 6, this.y + 4, 4, 4);
-      }
-      update() {
-        this.x -= state.gameSpeed;
-      }
-    }
-
-    // DOM Elements
-    const scoreDisplay = document.getElementById('scoreDisplay');
-    const highScoreDisplay = document.getElementById('highScoreDisplay');
-    const gemCountDisplay = document.getElementById('gemCountDisplay');
-    const statusAlert = document.getElementById('statusAlert');
-    const pauseGameBtn = document.getElementById('pauseGameBtn');
-    const howToModal = document.getElementById('howToModal');
-
-    // Colorful Environment Drawing
-    function drawBackground() {
-      // Sky Gradient
-      const isDark = document.documentElement.classList.contains('dark');
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      if (isDark) {
-        skyGrad.addColorStop(0, '#0f172a');
-        skyGrad.addColorStop(1, '#3b0764');
+      if (rates[curr1] && rates[curr2]) {
+        const rate = (rates[curr2] / rates[curr1]).toFixed(4);
+        rateDisplay.textContent = `อัตราแลกเปลี่ยน: 1 ${curr1} = ${rate} ${curr2}`;
       } else {
-        skyGrad.addColorStop(0, '#bae6fd'); // Vibrant Sky Blue
-        skyGrad.addColorStop(1, '#fef3c7'); // Warm Sun Glow
-      }
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Sun / Moon
-      ctx.fillStyle = isDark ? '#e2e8f0' : '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(720, 45, 22, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Parallax Mountains / Trees
-      ctx.fillStyle = isDark ? '#1e1b4b' : '#86efac';
-      for (let i = 0; i < canvas.width + 100; i += 90) {
-        const xPos = (i - (state.frameCount * 0.8) % 90);
-        ctx.beginPath();
-        ctx.arc(xPos, 220, 45, Math.PI, 0);
-        ctx.fill();
-      }
-
-      // Ground Path
-      ctx.fillStyle = isDark ? '#334155' : '#fde047'; // Sand Ground
-      ctx.fillRect(0, 218, canvas.width, 42);
-
-      ctx.fillStyle = isDark ? '#475569' : '#eab308';
-      ctx.fillRect(0, 218, canvas.width, 4);
-    }
-
-    // Spawn Obstacles & Gems
-    function handleSpawns() {
-      // Spawn Obstacles
-      if (state.frameCount % Math.max(45, Math.floor(110 - state.gameSpeed * 3)) === 0) {
-        if (Math.random() > 0.25) {
-          const type = Math.random() > 0.6 ? 'bird' : 'cactus';
-          obstacles.push(new Obstacle(type));
-        }
-      }
-
-      // Spawn Collectible Gems
-      if (state.frameCount % 70 === 0) {
-        if (Math.random() > 0.4) {
-          gemsList.push(new Gem());
-        }
-      }
-
-      // Process Obstacles
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        const obs = obstacles[i];
-        obs.update();
-        obs.draw();
-
-        // Collision Detection with Dino
-        const dinoHitX = dino.x + 6;
-        const dinoHitW = dino.width - 12;
-        const dinoHitY = dino.y;
-        const dinoHitH = dino.height;
-
-        if (
-          dinoHitX < obs.x + obs.width &&
-          dinoHitX + dinoHitW > obs.x &&
-          dinoHitY < obs.y + obs.height &&
-          dinoHitY + dinoHitH > obs.y
-        ) {
-          gameOver();
-        }
-
-        if (obs.x + obs.width < 0) obstacles.splice(i, 1);
-      }
-
-      // Process Gems
-      for (let i = gemsList.length - 1; i >= 0; i--) {
-        const gem = gemsList[i];
-        gem.update();
-        gem.draw();
-
-        // Gem Collection Hitbox
-        if (
-          !gem.collected &&
-          dino.x < gem.x + gem.width &&
-          dino.x + dino.width > gem.x &&
-          dino.y < gem.y + gem.height &&
-          dino.y + dino.height > gem.y
-        ) {
-          gem.collected = true;
-          state.gems += 1;
-          state.score += 50; // Bonus points for Gems
-          gemCountDisplay.textContent = state.gems;
-        }
-
-        if (gem.x + gem.width < 0) gemsList.splice(i, 1);
+        rateDisplay.textContent = 'กำลังโหลดอัตราแลกเปลี่ยน...';
       }
     }
 
-    // Format Score
-    function formatScore(num) {
-      return String(Math.floor(num)).padStart(5, '0');
-    }
+    // โจทย์ที่ 1: แปลงค่าจาก ช่อง 1 -> ช่อง 2 (Two-Way Direction A)
+    function calculateFromOne() {
+      const val = parseFloat(amountOne.value);
+      const curr1 = currencyOne.value;
+      const curr2 = currencyTwo.value;
 
-    // Main Game Loop
-    function animate() {
-      if (state.isPaused) return;
+      if (isNaN(val) || val <= 0) {
+        amountTwo.value = '';
+        return;
+      }
 
-      drawBackground();
-      dino.update();
-      dino.draw();
-
-      if (state.isGameStarted && !state.isGameOver) {
-        state.frameCount++;
-        state.score += 0.12;
-        state.gameSpeed += 0.0008; // Smooth speed escalation
-
-        scoreDisplay.textContent = formatScore(state.score);
-        handleSpawns();
-        requestAnimationFrame(animate);
-      } else if (!state.isGameStarted) {
-        ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#f3e8ff' : '#0f172a';
-        ctx.font = 'black 18px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('PRESS SPACE OR TAP TO START RUNNING! 🦖', canvas.width / 2, 115);
+      if (rates[curr1] && rates[curr2]) {
+        const result = (val * (rates[curr2] / rates[curr1])).toFixed(2);
+        amountTwo.value = result;
+        debounceSaveHistory(`${val.toLocaleString()} ${curr1} → ${parseFloat(result).toLocaleString()} ${curr2}`);
       }
     }
 
-    // Toggle Pause Game
-    function togglePause() {
-      if (!state.isGameStarted || state.isGameOver) return;
+    // โจทย์ที่ 1: แปลงค่าจาก ช่อง 2 -> ช่อง 1 ย้อนกลับ (Two-Way Direction B)
+    function calculateFromTwo() {
+      const val = parseFloat(amountTwo.value);
+      const curr1 = currencyOne.value;
+      const curr2 = currencyTwo.value;
 
-      state.isPaused = !state.isPaused;
-      if (state.isPaused) {
-        pauseGameBtn.textContent = '▶️ เล่นต่อ';
-        setStatus('⏸️ เกมหยุดชั่วคราว กด [ P ] หรือปุ่มเล่นต่อเพื่อวิ่งต่อ', 'info');
-        
-        // Render Overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'black 26px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('P A U S E D', canvas.width / 2, canvas.height / 2);
-      } else {
-        pauseGameBtn.textContent = '⏸️ หยุดเกม';
-        setStatus('วิ่งๆๆ! กระโดดหลบกระบองเพชร ก้มหลบนก และเก็บเพชร!', 'success');
-        animate();
+      if (isNaN(val) || val <= 0) {
+        amountOne.value = '';
+        return;
+      }
+
+      if (rates[curr1] && rates[curr2]) {
+        const result = (val * (rates[curr1] / rates[curr2])).toFixed(2);
+        amountOne.value = result;
+        debounceSaveHistory(`${val.toLocaleString()} ${curr2} ← ${parseFloat(result).toLocaleString()} ${curr1}`);
       }
     }
 
-    // Start / Jump Trigger
-    function handleJumpAction() {
-      if (!state.isGameStarted || state.isGameOver) {
-        restartGame();
-      } else if (!state.isPaused) {
-        dino.jump();
-      }
+    // โจทย์ที่ 2: บันทึกประวัติการแปลงเงินย้อนหลังสูงสุด 10 รายการ
+    function saveHistory(itemText) {
+      // ป้องกันการบันทึกรายการซ้ำเดิมติดๆ กัน
+      if (history.length > 0 && history[0] === itemText) return;
+
+      history.unshift(itemText);
+      if (history.length > 10) history.pop(); // เก็บย้อนหลังไม่เกิน 10 รายการ
+
+      renderHistory();
     }
 
-    // Game Over
-    function gameOver() {
-      state.isGameOver = true;
-      if (state.score > state.highScore) {
-        state.highScore = state.score;
-        highScoreDisplay.textContent = formatScore(state.highScore);
-      }
-      setStatus('💥 GAME OVER! ชนสิ่งกีดขวางเข้าแล้ว! กด [ Spacebar ] เพื่อเล่นใหม่', 'error');
-
-      ctx.fillStyle = '#ef4444';
-      ctx.font = 'black 26px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('G A M E   O V E R', canvas.width / 2, 105);
+    function debounceSaveHistory(itemText) {
+      clearTimeout(historyTimeout);
+      historyTimeout = setTimeout(() => {
+        saveHistory(itemText);
+      }, 800); // รอพิมพ์จบ 0.8 วินาทีแล้วค่อยลงประวัติ
     }
 
-    // Restart / Set Level
-    function restartGame() {
-      state.isGameOver = false;
-      state.isGameStarted = true;
-      state.isPaused = false;
-      state.score = 0;
-      state.gems = 0;
-      state.frameCount = 0;
-      obstacles = [];
-      gemsList = [];
+    function renderHistory() {
+      if (history.length === 0) {
+        historyList.innerHTML = `<li class="text-center py-4 text-slate-400 font-medium italic">ยังไม่มีประวัติการแปลงเงิน</li>`;
+        return;
+      }
 
-      gemCountDisplay.textContent = '0';
-      pauseGameBtn.textContent = '⏸️ หยุดเกม';
-
-      const speeds = { easy: 4.8, medium: 6.8, hard: 8.8 };
-      state.gameSpeed = speeds[state.level];
-
-      dino.y = dino.normalY;
-      dino.dy = 0;
-      dino.isCrouching = false;
-
-      setStatus('วิ่งๆๆ! กระโดดหลบกระบองเพชร ก้มหลบนก และเก็บเพชร!', 'success');
-      animate();
+      historyList.innerHTML = history.map((item, index) => `
+        <li class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-100 rounded-xl font-bold text-slate-700">
+          <span class="text-xs font-bold text-indigo-500 w-6">#${index + 1}</span>
+          <span class="flex-1 text-center font-extrabold">${item}</span>
+        </li>
+      `).join('');
     }
 
-    // Set Level
-    function setLevel(lvl) {
-      state.level = lvl;
-      const btnEasy = document.getElementById('btnLevelEasy');
-      const btnMed = document.getElementById('btnLevelMedium');
-      const btnHard = document.getElementById('btnLevelHard');
-
-      const active = 'flex-1 sm:flex-none py-1.5 px-4 bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm';
-      const inactive = 'flex-1 sm:flex-none py-1.5 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all';
-
-      btnEasy.className = lvl === 'easy' ? active : inactive;
-      btnMed.className = lvl === 'medium' ? active : inactive;
-      btnHard.className = lvl === 'hard' ? active : inactive;
-
-      if (!state.isGameStarted || state.isGameOver) {
-        setStatus(`เปลี่ยนระดับเป็น ${lvl.toUpperCase()} แล้ว! กดเริ่มเล่นได้เลย`, 'info');
-      } else {
-        restartGame();
-      }
-    }
-
-    // Status Banner Helper
-    function setStatus(msg, type) {
-      statusAlert.textContent = msg;
-      if (type === 'success') {
-        statusAlert.className = 'w-full mt-3 p-3 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200 text-xs font-bold rounded-2xl text-center border border-emerald-300 transition-all shadow-sm';
-      } else if (type === 'error') {
-        statusAlert.className = 'w-full mt-3 p-3 bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-200 text-xs font-bold rounded-2xl text-center border border-rose-300 transition-all shadow-sm';
-      } else {
-        statusAlert.className = 'w-full mt-3 p-3 bg-amber-50 dark:bg-purple-900/30 text-amber-800 dark:text-purple-200 text-xs font-bold rounded-2xl text-center border border-amber-200 dark:border-purple-700 transition-all shadow-sm';
-      }
+    // โจทย์ที่ 3: ปุ่มล้างข้อมูล (Clear / Reset Inputs & Rate State)
+    function resetData() {
+      amountOne.value = '';
+      amountTwo.value = '';
+      currencyOne.value = 'THB';
+      currencyTwo.value = 'USD';
+      updateRatesDisplay();
     }
 
     // Event Listeners
-    function setupEvents() {
-      // Keydown
-      window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' || e.code === 'ArrowUp') {
-          e.preventDefault();
-          handleJumpAction();
-        }
-        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
-          e.preventDefault();
-          if (state.isGameStarted && !state.isPaused && !state.isGameOver) {
-            dino.setCrouch(true);
-          }
-        }
-        if (e.code === 'KeyP' || e.code === 'Escape') {
-          e.preventDefault();
-          togglePause();
-        }
-      });
+    amountOne.addEventListener('input', calculateFromOne);
+    amountTwo.addEventListener('input', calculateFromTwo);
 
-      // Keyup
-      window.addEventListener('keyup', (e) => {
-        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
-          dino.setCrouch(false);
-        }
-      });
+    currencyOne.addEventListener('change', () => {
+      updateRatesDisplay();
+      if (amountOne.value) calculateFromOne();
+    });
 
-      // Mobile Touch Controls
-      canvas.addEventListener('click', handleJumpAction);
-      document.getElementById('mobileJumpBtn').addEventListener('click', handleJumpAction);
+    currencyTwo.addEventListener('change', () => {
+      updateRatesDisplay();
+      if (amountOne.value) calculateFromOne();
+    });
+
+    swapBtn.addEventListener('click', () => {
+      const tempCurr = currencyOne.value;
+      currencyOne.value = currencyTwo.value;
+      currencyTwo.value = tempCurr;
       
-      const mobileCrouchBtn = document.getElementById('mobileCrouchBtn');
-      mobileCrouchBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dino.setCrouch(true); });
-      mobileCrouchBtn.addEventListener('touchend', (e) => { e.preventDefault(); dino.setCrouch(false); });
-      mobileCrouchBtn.addEventListener('mousedown', () => dino.setCrouch(true));
-      mobileCrouchBtn.addEventListener('mouseup', () => dino.setCrouch(false));
+      updateRatesDisplay();
+      if (amountOne.value) calculateFromOne();
+    });
 
-      // Buttons
-      document.getElementById('btnLevelEasy').addEventListener('click', () => setLevel('easy'));
-      document.getElementById('btnLevelMedium').addEventListener('click', () => setLevel('medium'));
-      document.getElementById('btnLevelHard').addEventListener('click', () => setLevel('hard'));
+    resetBtn.addEventListener('click', resetData);
 
-      pauseGameBtn.addEventListener('click', togglePause);
-      document.getElementById('resetGameBtn').addEventListener('click', restartGame);
-      document.getElementById('toggleThemeBtn').addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        if (!state.isGameStarted || state.isPaused) drawBackground();
-      });
-      document.getElementById('howToPlayBtn').addEventListener('click', () => howToModal.showModal());
-    }
+    clearHistoryBtn.addEventListener('click', () => {
+      history = [];
+      renderHistory();
+    });
 
-    // Initialize Game
-    setupEvents();
-    animate();
+    // Initialize App
+    fetchRates();
   </script>
 </body>
 </html>
